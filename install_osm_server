@@ -25,12 +25,12 @@ sudo apt-get -y install libagg-dev liblua5.2-dev ttf-unifont
 #~ Installing database [postgresql]
 sudo apt-get -y install postgresql-9.1-postgis postgresql-contrib postgresql-server-dev-9.1
 
+sudo /etc/init.d/postgresql restart
+
 # database is called gis by convention. Change 'osm' to your username in the two places below. This user will render maps with Mapnik.
 
-sudo -u postgres -i
-createuser osm # answer yes for superuser 
-createdb -E UTF8 -O osm gis
-exit
+sudo -u postgres createuser -s osm
+sudo -u postgres createdb -E UTF8 -O osm gis
 
 # ??? man psql -f -d  "Set up PostGIS on the postgresql database:"
 psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql -d gis
