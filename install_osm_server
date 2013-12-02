@@ -1,0 +1,39 @@
+#!/bash/bin
+#~ OSM server install script
+#~ OSM needs 5 main components: Mod_tile, renderd, mapnik, osm2pgsql, postgresql
+#~ Manusal can be found on http://switch2osm.org
+
+sudo cat "osm ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+#~ Installing dependencies
+
+#Mapnik requires Boost 
+sudo add-apt-repository ppa:mapnik/boost 
+sudo apt-get -y update
+sudo apt-get -y install libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-python-dev libboost-regex-dev libboost-system-dev libboost-thread-dev
+
+#other packages
+sudo apt-get -y install subversion git-core 
+sudo apt-get -y install tar unzip wget bzip2
+
+#unknown packages 207MB
+sudo apt-get -y install build-essential autoconf libtool libxml2-dev libgeos-dev libpq-dev libbz2-dev proj munin-node munin libprotobuf-c0-dev protobuf-c-compiler libfreetype6-dev libpng12-dev libtiff4-dev libicu-dev libgdal-dev libcairo-dev libcairomm-1.0-dev
+
+sudo apt-get -y install apache2 apache2-dev 
+sudo apt-get -y install libagg-dev liblua5.2-dev ttf-unifont
+
+#~ Installing database [postgresql]
+sudo apt-get -y install postgresql-9.1-postgis postgresql-contrib postgresql-server-dev-9.1
+
+# database is called gis by convention. Change 'osm' to your username in the two places below. This user will render maps with Mapnik.
+
+sudo -u postgres -i
+createuser osm # answer yes for superuser 
+createdb -E UTF8 -O osm gis
+exit
+
+# ??? man psql -f -d  "Set up PostGIS on the postgresql database:"
+psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql -d gis
+
+# user 'osm' permission to access some of the PostGIS data 
+psql -d gis -c "ALTER TABLE geometry_columns OWNER TO osm; ALTER TABLE spatial_ref_sys OWNER TO osm;"
