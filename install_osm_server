@@ -37,3 +37,47 @@ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql -d gis
 
 # user 'osm' permission to access some of the PostGIS data 
 psql -d gis -c "ALTER TABLE geometry_columns OWNER TO osm; ALTER TABLE spatial_ref_sys OWNER TO osm;"
+
+#~ Installing osm2pgsql
+mkdir ~/src
+cd ~/src
+git clone git://github.com/openstreetmap/osm2pgsql.git
+cd osm2pgsql
+./autogen.sh
+./configure
+make
+sudo make install
+psql -f /usr/local/share/osm2pgsql/900913.sql -d gis
+
+#~ Install Mapnik Library
+cd ~/src
+git clone git://github.com/mapnik/mapnik
+cd mapnik
+git branch 2.0 origin/2.0.x
+git checkout 2.0
+
+python scons/scons.py configure INPUT_PLUGINS=all OPTIMIZATION=3 SYSTEM_FONTS=/usr/share/fonts/truetype/
+python scons/scons.py
+sudo python scons/scons.py install
+sudo ldconfig
+
+#~ Install mod_tile and renderd
+cd ~/src
+git clone git://github.com/openstreetmap/mod_tile.git
+cd mod_tile
+./autogen.sh
+./configure
+make
+sudo make install
+sudo make install-mod_tile
+sudo ldconfig
+
+#~ Install Mapnik styles
+cd ~/src
+svn co http://svn.openstreetmap.org/applications/rendering/mapnik mapnik-style
+
+# Coastline data over 400MB downloads
+cd ~/src/mapnik-style
+#sudo ./get-coastlines.sh /usr/local/share
+
+
