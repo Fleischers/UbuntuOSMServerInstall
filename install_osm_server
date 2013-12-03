@@ -80,4 +80,5 @@ svn co http://svn.openstreetmap.org/applications/rendering/mapnik mapnik-style
 cd ~/src/mapnik-style
 #sudo ./get-coastlines.sh /usr/local/share
 
-
+cd inc
+cp fontset-settings.xml.inc.template fontset-settings.xml.inc
