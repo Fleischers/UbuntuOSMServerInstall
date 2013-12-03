@@ -82,3 +82,35 @@ cd ~/src/mapnik-style
 
 cd inc
 cp fontset-settings.xml.inc.template fontset-settings.xml.inc
+cp datasource-settings.xml.inc.template datasource-settings.xml.inc
+cp settings.xml.inc.template settings.xml.inc
+
+#MODIFY!
+#______
+
+#~ Configure renderd
+#/usr/local/etc/renderd.conf
+
+#socketname=/var/run/renderd/renderd.sock
+#plugins_dir=/usr/local/lib/mapnik/input
+#font_dir=/usr/share/fonts/truetype/ttf-dejavu
+#XML=/home/osm/src/mapnik-style/osm.xml
+#HOST=localhost
+
+#files required for the mod_tile system to run
+sudo mkdir /var/run/renderd
+sudo chown osm /var/run/renderd
+sudo mkdir /var/lib/mod_tile
+sudo chown osm /var/lib/mod_tile
+
+#~ Configure mod_tile
+sudo cat "LoadModule tile_module /usr/lib/apache2/modules/mod_tile.so" >> /etc/apache2/conf.d/mod_tile
+
+#after admin email line in /etc/apache2/sites-available/default
+# Change it!!!!!!
+LoadTileConfigFile /usr/local/etc/renderd.conf
+ModTileRenderdSocketName /var/run/renderd/renderd.sock
+# Timeout before giving up for a tile to be rendered
+ModTileRequestTimeout 0
+# Timeout before giving up for a tile to be rendered that is otherwise missing
+ModTileMissingRequestTimeout 30
