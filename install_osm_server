@@ -85,6 +85,7 @@ cp fontset-settings.xml.inc.template fontset-settings.xml.inc
 cp datasource-settings.xml.inc.template datasource-settings.xml.inc
 cp settings.xml.inc.template settings.xml.inc
 
+#fontset-settings.xml.inc
 #MODIFY!
 #______
 
